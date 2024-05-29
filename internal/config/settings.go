@@ -15,7 +15,7 @@ type Settings struct {
 	ClickHouseDatabase             string `yaml:"CLICKHOUSE_DATABASE"`
 	DeviceAPIAddr                  string `yaml:"DEVICES_API_GRPC_ADDR"`
 	DeviceDataIndexName            string `yaml:"DEVICE_DATA_INDEX_NAME"`
-	ElasticSearchAnalyticsHost     string `yaml:"ELASTIC_SEARCH_ANALYTICS_HOST"`
-	ElasticSearchAnalyticsUsername string `yaml:"ELASTIC_SEARCH_ANALYTICS_USERNAME"`
-	ElasticSearchAnalyticsPassword string `yaml:"ELASTIC_SEARCH_ANALYTICS_PASSWORD"`
+	ElasticSearchAnalyticsHost     string `yaml:"ELASTICSEARCH_URL"`
+	ElasticSearchAnalyticsUsername string `yaml:"ELASTICSEARCH_USER"`
+	ElasticSearchAnalyticsPassword string `yaml:"ELASTICSEARCH_PASSWORD"`
 }
