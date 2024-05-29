@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: dimozone/es-ch-sync
   pullPolicy: IfNotPresent
-  tag: 142eee3
+  tag: f15f049
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
@@ -31,7 +31,7 @@ env:
   START_TIME: '2024-01-01T00:00:00Z'
   BATCH_SIZE: 1000
   TOKEN_IDS: '15'
-  DEVICES_API_GRPC_ADDR: 'devices-api-dev:8086'
+  DEVICES_API_GRPC_ADDR: devices-api-dev:8086
 service:
   type: ClusterIP
   ports:
