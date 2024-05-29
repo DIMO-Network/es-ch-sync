@@ -64,7 +64,9 @@ func (s *Synchronizer) Start(ctx context.Context, opts Options) error {
 	if err != nil {
 		return fmt.Errorf("failed to get required elastic fields: %w", err)
 	}
+
 	for _, tokenID := range tokenIDs {
+		// adjust stop time if there are already signals synced in clickhouse.
 		stopTime, err := s.getStopTime(ctx, tokenID, &opts)
 		if err != nil {
 			s.log.Error().Err(err).Msg("failed to get next timestamp")
@@ -152,6 +154,7 @@ func (s *Synchronizer) convertToClickhouseSignals(ctx context.Context, records [
 	return signals
 }
 
+// getTokenIDs returns the tokenIDs from the given tokenID strings or from clickhouse if none are provided.
 func (s *Synchronizer) getTokenIDs(ctx context.Context, tokenIDStrs []string) ([]uint32, error) {
 	if len(tokenIDStrs) == 0 {
 		// get tokenIDs from clickhouse

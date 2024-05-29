@@ -71,7 +71,7 @@ func TestSync(t *testing.T) {
 	syncer, chConn, cleanup := setupService(ctx, t)
 	t.Cleanup(cleanup)
 
-	// two month duration
+	// startTime is set to the get half of the inserted records
 	startTime := testFirstTime.Add(time.Millisecond * time.Duration(batchSize) / 2)
 	opts := sync.Options{
 		StartTime: startTime,
@@ -103,7 +103,7 @@ func TestSyncWithTokneIDFromCH(t *testing.T) {
 	syncer, chConn, cleanup := setupService(ctx, t)
 	t.Cleanup(cleanup)
 
-	// two month duration
+	// startTime is set to the get half of the inserted records
 	startTime := testFirstTime.Add(time.Millisecond * time.Duration(batchSize) / 2)
 	opts := sync.Options{
 		StartTime: startTime,
@@ -140,7 +140,7 @@ func TestSyncWithFieldFilter(t *testing.T) {
 	syncer, chConn, cleanup := setupService(ctx, t)
 	t.Cleanup(cleanup)
 
-	// two month duration
+	// startTime is set to the get half of the inserted records
 	startTime := testFirstTime.Add(time.Millisecond * time.Duration(batchSize) / 2)
 	opts := sync.Options{
 		StartTime: startTime,
@@ -169,7 +169,6 @@ func setupService(ctx context.Context, t *testing.T) (*sync.Synchronizer, clickh
 	chConn, es8Client, cleanup, err := Create(ctx)
 	require.NoErrorf(t, err, "could not create containers: %v", err)
 
-	// Create a new elastic service with the client and the logger.
 	logger := zerolog.New(os.Stdout).With().Timestamp().Str("app", "es-ch-sync-test").Logger()
 
 	err = addStatusMapping(ctx, es8Client, deviceIndex)

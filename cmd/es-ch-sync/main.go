@@ -97,6 +97,9 @@ func createSychronizer(logger zerolog.Logger, settings config.Settings) (*sync.S
 		return nil, fmt.Errorf("failed to create clickhouse service: %w", err)
 	}
 	esService, err := elastic.New(settings)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create elastic service: %w", err)
+	}
 	devicesConn, err := grpc.Dial(settings.DeviceAPIAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial devices api: %w", err)

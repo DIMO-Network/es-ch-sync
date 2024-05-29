@@ -66,11 +66,10 @@ func (s *Service) GetRecordsSince(ctx context.Context, batchSize int, startTime,
 	if len(requiredFields) > 0 {
 		source := &types.SourceFilter{
 			// get root fields
-			Includes: []string{"subject", "datascehama", "id", "source", "time", "type"},
+			Includes: []string{"subject", "dataschema", "id", "source", "time", "type"},
 		}
-
 		for _, field := range requiredFields {
-			// fitler for
+			// filter for desired fields
 			query.Query.Bool.Should = append(query.Query.Bool.Should, types.Query{Exists: &types.ExistsQuery{Field: field}})
 			source.Includes = append(source.Includes, field)
 		}
