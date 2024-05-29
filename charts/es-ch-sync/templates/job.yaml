@@ -45,9 +45,9 @@ spec:
                   fieldPath: metadata.namespace
           envFrom:
           - configMapRef:
-            name: {{ include "es-ch-sync.fullname" . }}-config
+              name: {{ include "es-ch-sync.fullname" . }}-config
           - secretRef:
-            name: {{ include "es-ch-sync.fullname" . }}-secret
+              name: {{ include "es-ch-sync.fullname" . }}-secret
           ports:
 {{ toYaml .Values.ports | indent 12 }}
           livenessProbe:
