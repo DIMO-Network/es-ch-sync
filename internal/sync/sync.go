@@ -111,7 +111,15 @@ func (s *Synchronizer) getStopTime(ctx context.Context, tokenID uint32, opts *Op
 // It converts the records to Clickhouse signals and inserts them into Clickhouse.
 // The function returns the oldest timestamp and subject from the processed records, and an error if any.
 func (s *Synchronizer) processRecords(ctx context.Context, batchSize int, startTime time.Time, stopTime time.Time, subject string, requiredFields []string) (time.Time, error) {
-	esRecords, err := s.esService.GetRecordsSince(ctx, batchSize, startTime, stopTime, subject, requiredFields)
+	var lastTimestamp time.Time
+	var err error
+	var esRecords [][]byte
+	var signals []vss.Signal
+	var tokenID uint32
+	defer func() {
+		s.log.Info().Int("TokenID", int(tokenID)).Str("subject", subject).Time("lastTimestamp", lastTimestamp).Int("numSignals", len(signals)).Int("numRecords", len(esRecords)).Msg("Batch processed successfully")
+	}()
+	esRecords, err = s.esService.GetRecordsSince(ctx, batchSize, startTime, stopTime, subject, requiredFields)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("failed to get records elatic records: %w", err)
 	}
@@ -119,14 +127,16 @@ func (s *Synchronizer) processRecords(ctx context.Context, batchSize int, startT
 		// no more records to sync
 		return time.Time{}, errNoRows
 	}
-	signals := s.convertToClickhouseSignals(ctx, esRecords)
+	signals = s.convertToClickhouseSignals(ctx, esRecords)
+	if len(signals) != 0 {
+		tokenID = signals[0].TokenID
+	}
 	err = s.chService.InsertIntoClickhouse(ctx, signals)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("failed to insert into clickhouse: %w", err)
 	}
 	lastRecord := esRecords[len(esRecords)-1]
-	lastTimestamp, _ := convert.TimestampFromV1Data(lastRecord)
-	s.log.Info().Str("subject", subject).Time("lastTimestamp", lastTimestamp).Int("numSignals", len(signals)).Int("numRecords", len(esRecords)).Msg("Batch processed successfully")
+	lastTimestamp, _ = convert.TimestampFromV1Data(lastRecord)
 	return lastTimestamp, nil
 }
 

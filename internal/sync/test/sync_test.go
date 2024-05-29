@@ -131,7 +131,7 @@ func TestSyncWithTokneIDFromCH(t *testing.T) {
 
 func TestSyncWithFieldFilter(t *testing.T) {
 	sigsInRecord := 2        // each status has 2 signals
-	recordsPerTimestamp := 8 // each timestamp has 7 records with different subjects
+	recordsPerTimestamp := 8 // each timestamp has 8 records with different subjects
 	recordsLoaded := recordsPerTimestamp * batchSize
 	totalSignals := (recordsLoaded * sigsInRecord)
 	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
