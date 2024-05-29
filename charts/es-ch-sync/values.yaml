@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: dimozone/es-ch-sync
   pullPolicy: IfNotPresent
-  tag: 27ac6b6
+  tag: '3088358'
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
