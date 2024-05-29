@@ -2,14 +2,14 @@ replicaCount: 1
 image:
   repository: dimozone/es-ch-sync
   pullPolicy: IfNotPresent
-  tag: fcccb65
+  tag: 06f5db7
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: ''
+fullnameOverride: ''
 serviceAccount:
   create: true
   annotations: {}
-  name: ""
+  name: ''
 podAnnotations: {}
 podSecurityContext:
   runAsNonRoot: true
@@ -28,9 +28,9 @@ env:
   MON_PORT: 8888
   CLICKHOUSE_TCP_PORT: 9400
   CLICKHOUSE_DATABASE: dimo
-  START_TIME: "2024-01-01T00:00:00Z"
+  START_TIME: '2024-01-01T00:00:00Z'
   BATCH_SIZE: 1000
-  TOKEN_IDS: "15"
+  TOKEN_IDS: '15'
 service:
   type: ClusterIP
   ports:
@@ -54,10 +54,10 @@ ingress:
   className: nginx
   annotations:
     nginx.ingress.kubernetes.io/auth-tls-secret: ingress/cf-origin-ca
-    nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/auth-tls-verify-client: 'on'
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
     nginx.ingress.kubernetes.io/cors-allow-origin: https://app.dev.dimo.zone, https://admin.dev.dimo.zone
-    nginx.ingress.kubernetes.io/limit-rps: "25"
+    nginx.ingress.kubernetes.io/limit-rps: '25'
     external-dns.alpha.kubernetes.io/hostname: es-ch-sync.dev.dimo.zone
   hosts:
     - host: es-ch-sync.dev.dimo.zone
