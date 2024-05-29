@@ -2,6 +2,7 @@ package clickhouse
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
@@ -40,6 +41,9 @@ func New(settings config.Settings) (*Service, error) {
 			Username: settings.ClickHouseUser,
 			Password: settings.ClickHousePassword,
 			Database: settings.ClickHouseDatabase,
+		},
+		TLS: &tls.Config{
+			MinVersion: tls.VersionTLS12,
 		},
 	})
 	if err != nil {
