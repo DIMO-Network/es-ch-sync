@@ -1,0 +1,821 @@
+{
+    "dynamic": "true",
+    "dynamic_date_formats": [
+        "strict_date_optional_time",
+        "yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"
+    ],
+    "dynamic_templates": [],
+    "date_detection": true,
+    "numeric_detection": false,
+    "properties": {
+        "data": {
+            "properties": {
+                "acceleratorPedalPositionD": {
+                    "type": "float"
+                },
+                "acceleratorPedalPositionE": {
+                    "type": "float"
+                },
+                "altitude": {
+                    "type": "float"
+                },
+                "ambientTemp": {
+                    "type": "float"
+                },
+                "barometricPressure": {
+                    "type": "long"
+                },
+                "batteryCapacity": {
+                    "type": "long"
+                },
+                "batteryVoltage": {
+                    "type": "float"
+                },
+                "cell": {
+                    "properties": {
+                        "details": {
+                            "properties": {
+                                "cell_[0]": {
+                                    "properties": {
+                                        "cell_selection_rx_level": {
+                                            "type": "long"
+                                        },
+                                        "physical_cell_id": {
+                                            "type": "long"
+                                        },
+                                        "rsrp": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rsrq": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rssi": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "cell_[1]": {
+                                    "properties": {
+                                        "cell_selection_rx_level": {
+                                            "type": "long"
+                                        },
+                                        "physical_cell_id": {
+                                            "type": "long"
+                                        },
+                                        "rsrp": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rsrq": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rssi": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "cell_[2]": {
+                                    "properties": {
+                                        "cell_selection_rx_level": {
+                                            "type": "long"
+                                        },
+                                        "physical_cell_id": {
+                                            "type": "long"
+                                        },
+                                        "rsrp": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rsrq": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rssi": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "cell_[3]": {
+                                    "properties": {
+                                        "cell_selection_rx_level": {
+                                            "type": "long"
+                                        },
+                                        "physical_cell_id": {
+                                            "type": "long"
+                                        },
+                                        "rsrp": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rsrq": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rssi": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "cell_[4]": {
+                                    "properties": {
+                                        "cell_selection_rx_level": {
+                                            "type": "long"
+                                        },
+                                        "physical_cell_id": {
+                                            "type": "long"
+                                        },
+                                        "rsrp": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rsrq": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rssi": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "cell_[5]": {
+                                    "properties": {
+                                        "cell_selection_rx_level": {
+                                            "type": "long"
+                                        },
+                                        "physical_cell_id": {
+                                            "type": "long"
+                                        },
+                                        "rsrp": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rsrq": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rssi": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "cell_[6]": {
+                                    "properties": {
+                                        "cell_selection_rx_level": {
+                                            "type": "long"
+                                        },
+                                        "physical_cell_id": {
+                                            "type": "long"
+                                        },
+                                        "rsrp": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rsrq": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rssi": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "cell_[7]": {
+                                    "properties": {
+                                        "cell_selection_rx_level": {
+                                            "type": "long"
+                                        },
+                                        "physical_cell_id": {
+                                            "type": "long"
+                                        },
+                                        "rsrp": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rsrq": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        },
+                                        "rssi": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "global_cell_id": {
+                                    "type": "long"
+                                },
+                                "plmn": {
+                                    "type": "long"
+                                }
+                            }
+                        },
+                        "ip": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        }
+                    }
+                },
+                "chargeLimit": {
+                    "type": "float"
+                },
+                "charger": {
+                    "properties": {
+                        "power": {
+                            "type": "float"
+                        }
+                    }
+                },
+                "charging": {
+                    "type": "boolean"
+                },
+                "commandedEgr": {
+                    "type": "long"
+                },
+                "coolantTemp": {
+                    "type": "long"
+                },
+                "device": {
+                    "properties": {
+                        "device_id": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "ethereum_address": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "hw_version": {
+                            "type": "long"
+                        },
+                        "imei": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "schema_version": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "sw_version": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "timestamp": {
+                            "type": "long"
+                        },
+                        "unit_id": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        }
+                    }
+                },
+                "deviceDefinitionId": {
+                    "type": "keyword"
+                },
+                "deviceState": {
+                    "type": "long"
+                },
+                "dtc": {
+                    "properties": {
+                        "distanceSinceClear": {
+                            "type": "long"
+                        },
+                        "distanceWithMil": {
+                            "type": "long"
+                        },
+                        "warmupsSinceClear": {
+                            "type": "long"
+                        }
+                    }
+                },
+                "engineLoad": {
+                    "type": "float"
+                },
+                "engineSpeed": {
+                    "type": "float"
+                },
+                "errors": {
+                    "properties": {
+                        "description": {
+                            "type": "keyword"
+                        },
+                        "errorCode": {
+                            "type": "long"
+                        },
+                        "errorType": {
+                            "type": "keyword"
+                        },
+                        "resolution": {
+                            "properties": {
+                                "type": {
+                                    "type": "keyword"
+                                },
+                                "url": {
+                                    "type": "text",
+                                    "fields": {
+                                        "keyword": {
+                                            "type": "keyword",
+                                            "ignore_above": 256
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "type": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "fuelPercentRemaining": {
+                    "type": "float"
+                },
+                "fuelType": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "fwVersion": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "hasErrors": {
+                    "type": "boolean"
+                },
+                "hdop": {
+                    "type": "float"
+                },
+                "hybridEVBatteryCapacity": {
+                    "type": "long",
+                    "ignore_malformed": true
+                },
+                "hybridEVBatteryChargeVoltage": {
+                    "type": "long"
+                },
+                "hybridEVBatteryMaxCellVolrage": {
+                    "type": "long"
+                },
+                "hybridEVBatteryRemainingChargeTime": {
+                    "type": "long"
+                },
+                "hybridEVBatterySoh": {
+                    "type": "long"
+                },
+                "hybridEVBatteryTemp": {
+                    "type": "long",
+                    "ignore_malformed": true
+                },
+                "intakePressure": {
+                    "type": "long"
+                },
+                "intakeTemp": {
+                    "type": "long"
+                },
+                "latitude": {
+                    "type": "float"
+                },
+                "longTermFuelTrim1": {
+                    "type": "float"
+                },
+                "longitude": {
+                    "type": "float"
+                },
+                "lora": {
+                    "properties": {
+                        "app_eui": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "dc_balance": {
+                            "type": "long"
+                        },
+                        "devAddr": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "deveui": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "dr": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "fPort": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "fcnt": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "payload_size": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "txFrequency": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "txModulationLoraBandwidth": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "txModulationLoraCodeRate": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "txModulationLoraSpreadingFactor": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        }
+                    }
+                },
+                "maf": {
+                    "type": "float"
+                },
+                "make": {
+                    "type": "keyword"
+                },
+                "makeSlug": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "model": {
+                    "type": "keyword"
+                },
+                "modelSlug": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "nsat": {
+                    "type": "long"
+                },
+                "odometer": {
+                    "type": "float"
+                },
+                "oil": {
+                    "type": "float"
+                },
+                "protocol": {
+                    "type": "long"
+                },
+                "range": {
+                    "type": "float"
+                },
+                "region": {
+                    "type": "keyword"
+                },
+                "relativeAccelPedalPos": {
+                    "type": "long",
+                    "ignore_malformed": true
+                },
+                "runTime": {
+                    "type": "long"
+                },
+                "shortTermFuelTrim1": {
+                    "type": "float"
+                },
+                "signals": {
+                    "properties": {
+                        "pidtest_relativeaccpedalpos": {
+                            "properties": {
+                                "value": {
+                                    "type": "long",
+                                    "ignore_malformed": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "soc": {
+                    "type": "float"
+                },
+                "speed": {
+                    "type": "long"
+                },
+                "throttlePosition": {
+                    "type": "float"
+                },
+                "timestamp": {
+                    "type": "date"
+                },
+                "tires": {
+                    "properties": {
+                        "backLeft": {
+                            "type": "long"
+                        },
+                        "backRight": {
+                            "type": "long"
+                        },
+                        "frontLeft": {
+                            "type": "long"
+                        },
+                        "frontRight": {
+                            "type": "long"
+                        }
+                    }
+                },
+                "vehicleId": {
+                    "type": "keyword"
+                },
+                "vin": {
+                    "type": "keyword"
+                },
+                "vinLast8": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "wifi": {
+                    "properties": {
+                        "ssid": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "status": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        }
+                    }
+                },
+                "year": {
+                    "type": "long"
+                }
+            }
+        },
+        "id": {
+            "type": "keyword"
+        },
+        "location": {
+            "type": "geo_point",
+            "ignore_malformed": true
+        },
+        "source": {
+            "type": "keyword"
+        },
+        "specversion": {
+            "type": "keyword"
+        },
+        "subject": {
+            "type": "keyword"
+        },
+        "time": {
+            "type": "date"
+        },
+        "type": {
+            "type": "keyword"
+        }
+    }
+}
