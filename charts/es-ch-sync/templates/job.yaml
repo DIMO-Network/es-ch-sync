@@ -10,6 +10,7 @@ spec:
   template:
     metadata:
       annotations:
+        argocd.argoproj.io/sync-options: Replace=true
         checksum/config: {{ include (print $.Template.BasePath "/envconfigmap.yaml") . | sha256sum }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
