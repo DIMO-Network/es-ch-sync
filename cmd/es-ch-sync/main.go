@@ -74,12 +74,20 @@ func settingsToOpttions(settings config.Settings) (sync.Options, error) {
 	if batchSize == 0 {
 		batchSize = 1000
 	}
+	var tokenIDs []string
+	if settings.TokenIDs != "" {
+		tokenIDs = strings.Split(settings.TokenIDs, ",")
+	}
+	var signals []string
+	if settings.Signals != "" {
+		signals = strings.Split(settings.Signals, ",")
+	}
 	return sync.Options{
 		StartTime: startTime,
 		StopTime:  stopTime,
 		BatchSize: batchSize,
-		TokenIDs:  strings.Split(settings.TokenIDs, ","),
-		Signals:   strings.Split(settings.Signals, ","),
+		TokenIDs:  tokenIDs,
+		Signals:   signals,
 	}, nil
 }
 

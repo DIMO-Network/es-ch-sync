@@ -64,8 +64,10 @@ func (s *Synchronizer) Start(ctx context.Context, opts Options) error {
 	if err != nil {
 		return fmt.Errorf("failed to get required elastic fields: %w", err)
 	}
+	s.log.Info().Time("StartTime", opts.StartTime).Time("StopTime", opts.StopTime).Interface("TokenIDs", tokenIDs).Interface("Signals", opts.Signals).Msg("Starting sync...")
 
 	for _, tokenID := range tokenIDs {
+		s.log.Info().Msg(fmt.Sprintf("Syncing tokenID: %d", tokenID))
 		// adjust stop time if there are already signals synced in clickhouse.
 		stopTime, err := s.getStopTime(ctx, tokenID, &opts)
 		if err != nil {
@@ -189,7 +191,7 @@ func (s *Synchronizer) getTokenIDs(ctx context.Context, tokenIDStrs []string) ([
 }
 
 func getRequiredEsFields(opts Options) ([]string, error) {
-	if len(opts.Signals) == 0 || (len(opts.Signals) == 1 && opts.Signals[0] == "") {
+	if len(opts.Signals) == 0 {
 		return nil, nil
 	}
 	signalDefs, err := schema.LoadDefinitionFile(strings.NewReader(schema.DefinitionsYAML()))
