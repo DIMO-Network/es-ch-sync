@@ -3,6 +3,8 @@ kind: Job
 metadata:
   name: {{ include "es-ch-sync.fullname" . }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
   labels:
     {{- include "es-ch-sync.labels" . | nindent 4 }}
 spec:
@@ -10,7 +12,6 @@ spec:
   template:
     metadata:
       annotations:
-        argocd.argoproj.io/sync-options: Replace=true
         checksum/config: {{ include (print $.Template.BasePath "/envconfigmap.yaml") . | sha256sum }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}

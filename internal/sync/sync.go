@@ -179,7 +179,7 @@ func (s *Synchronizer) getTokenIDs(ctx context.Context, tokenIDStrs []string) ([
 }
 
 func getRequiredEsFields(opts Options) ([]string, error) {
-	if len(opts.Signals) == 0 {
+	if len(opts.Signals) == 0 || (len(opts.Signals) == 1 && opts.Signals[0] == "") {
 		return nil, nil
 	}
 	signalDefs, err := schema.LoadDefinitionFile(strings.NewReader(schema.DefinitionsYAML()))
@@ -188,7 +188,11 @@ func getRequiredEsFields(opts Options) ([]string, error) {
 	}
 	var elasticFields []string
 	for _, signal := range opts.Signals {
-		for _, conv := range signalDefs.FromName[signal].Conversions {
+		defInfo, ok := signalDefs.FromName[signal]
+		if !ok {
+			continue
+		}
+		for _, conv := range defInfo.Conversions {
 			elasticFields = append(elasticFields, "data."+conv.OriginalName)
 		}
 	}
