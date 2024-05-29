@@ -44,10 +44,10 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
           envFrom:
-          - configMapRef:
-            name: {{ include "es-ch-sync.fullname" . }}-config
-          - secretRef:
-            name: {{ include "es-ch-sync.fullname" . }}-secret
+            - configMapRef:
+              name: {{ include "es-ch-sync.fullname" . }}-config
+            - secretRef:
+              name: {{ include "es-ch-sync.fullname" . }}-secret
           ports:
 {{ toYaml .Values.ports | indent 12 }}
           livenessProbe:
