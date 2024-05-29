@@ -91,7 +91,6 @@ func serveMonitoring(port string, logger *zerolog.Logger) *fiber.App {
 }
 
 func createSychronizer(logger zerolog.Logger, settings config.Settings) (*sync.Synchronizer, error) {
-
 	chService, err := clickhouse.New(settings)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create clickhouse service: %w", err)
