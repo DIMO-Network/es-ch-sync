@@ -56,18 +56,28 @@ func run() error {
 }
 
 func settingsToOpttions(settings config.Settings) (sync.Options, error) {
-	stopTime, err := time.Parse(time.RFC3339, settings.StopTime)
-	if err != nil {
-		return sync.Options{}, fmt.Errorf("failed to parse stop time: %w", err)
+	var stopTime, startTime time.Time
+	var err error
+	if settings.StopTime != "" {
+		stopTime, err = time.Parse(time.RFC3339, settings.StopTime)
+		if err != nil {
+			return sync.Options{}, fmt.Errorf("failed to parse stop time: %w", err)
+		}
 	}
-	startTime, err := time.Parse(time.RFC3339, settings.StartTime)
-	if err != nil {
-		return sync.Options{}, fmt.Errorf("failed to parse start time: %w", err)
+	if settings.StartTime != "" {
+		startTime, err = time.Parse(time.RFC3339, settings.StartTime)
+		if err != nil {
+			return sync.Options{}, fmt.Errorf("failed to parse start time: %w", err)
+		}
+	}
+	batchSize := settings.BatchSize
+	if batchSize == 0 {
+		batchSize = 1000
 	}
 	return sync.Options{
 		StartTime: startTime,
 		StopTime:  stopTime,
-		BatchSize: settings.BatchSize,
+		BatchSize: batchSize,
 		TokenIDs:  strings.Split(settings.TokenIDs, ","),
 		Signals:   strings.Split(settings.Signals, ","),
 	}, nil
