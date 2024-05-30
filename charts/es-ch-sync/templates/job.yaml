@@ -1,10 +1,8 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "es-ch-sync.fullname" . }}
+  generateName: {{ include "es-ch-sync.fullname" . }}
   namespace: {{ .Release.Namespace }}
-  annotations:
-    argocd.argoproj.io/sync-options: Replace=true
   labels:
     {{- include "es-ch-sync.labels" . | nindent 4 }}
 spec:

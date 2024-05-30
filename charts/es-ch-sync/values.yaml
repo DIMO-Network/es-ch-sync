@@ -30,7 +30,6 @@ env:
   CLICKHOUSE_DATABASE: dimo
   START_TIME: '2024-01-01T00:00:00Z'
   BATCH_SIZE: 1000
-  TOKEN_IDS: '15'
   DEVICE_DATA_INDEX_NAME: device-status-dev*
   DEVICES_API_GRPC_ADDR: devices-api-dev:8086
 service:
