@@ -2,7 +2,7 @@ replicaCount: 2
 image:
   repository: dimozone/es-ch-sync
   pullPolicy: IfNotPresent
-  tag: 0.1.19
+  tag: 0.0.1
 cronJob:
   enabled: false
   schedule: 0 0 * * 0
@@ -16,10 +16,10 @@ ingress:
   className: nginx
   annotations:
     nginx.ingress.kubernetes.io/auth-tls-secret: ingress/cf-origin-ca
-    nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/auth-tls-verify-client: 'on'
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
     nginx.ingress.kubernetes.io/cors-allow-origin: https://app.dimo.zone, https://admin.team.dimo.zone
-    nginx.ingress.kubernetes.io/limit-rps: "50"
+    nginx.ingress.kubernetes.io/limit-rps: '50'
     external-dns.alpha.kubernetes.io/hostname: es-ch-sync.dimo.zone
   hosts:
     - host: es-ch-sync.dimo.zone
