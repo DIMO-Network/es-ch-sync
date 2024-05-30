@@ -2,7 +2,6 @@ package elastic
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -14,7 +13,6 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/some"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
-	"github.com/rs/zerolog/log"
 	"github.com/tidwall/gjson"
 )
 
@@ -78,11 +76,6 @@ func (s *Service) GetRecordsSince(ctx context.Context, batchSize int, startTime,
 		query.Source_ = source
 		query.Query.Bool.MinimumShouldMatch = 1
 	}
-	if queryBytes, err := json.Marshal(query); err != nil {
-		log.Error().Err(err).Interface("query", query).Msg("failed to marshal query")
-	} else {
-		log.Info().Str("query", string(queryBytes)).Msg("Elastic Query")
-	}
 	res, err := s.EsClient.Search().Index(s.StatusIndex).Request(query).Perform(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search elastic search: %w", err)
@@ -92,13 +85,18 @@ func (s *Service) GetRecordsSince(ctx context.Context, batchSize int, startTime,
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
+	// check if response has an error
+	if err := gjson.GetBytes(body, "error").String(); err != "" {
+		return nil, fmt.Errorf("failed to get records from elasticsearch: %s", err)
+	}
+
 	docs := [][]byte{}
 	gjson.GetBytes(body, "hits.hits.#._source").ForEach(func(_, value gjson.Result) bool {
 		data := resultToBytes(body, value)
 		docs = append(docs, data)
 		return true
 	})
-	log.Info().Str("response", string(body)).Msg("Elastic Response")
+
 	return docs, nil
 }
 
