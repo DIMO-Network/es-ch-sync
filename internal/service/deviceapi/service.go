@@ -53,7 +53,7 @@ func (s *Service) TokenIDFromSubject(ctx context.Context, id string) (uint32, er
 	var tokenID *uint64
 	get, found := s.memoryCache.Get(fmt.Sprintf(deviceTokenCacheKey, id))
 	if found {
-		tokenID = get.(*pb.UserDevice).TokenId
+		tokenID = get.(*uint64)
 	} else {
 		userDevice, err := s.deviceClient.GetUserDevice(ctx, &pb.GetUserDeviceRequest{
 			Id: id,
