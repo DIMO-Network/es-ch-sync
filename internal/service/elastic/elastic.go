@@ -2,6 +2,7 @@ package elastic
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/some"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
+	"github.com/rs/zerolog/log"
 	"github.com/tidwall/gjson"
 )
 
@@ -76,6 +78,11 @@ func (s *Service) GetRecordsSince(ctx context.Context, batchSize int, startTime,
 		query.Source_ = source
 		query.Query.Bool.MinimumShouldMatch = 1
 	}
+	if queryBytes, err := json.Marshal(query); err != nil {
+		log.Error().Err(err).Interface("query", query).Msg("failed to marshal query")
+	} else {
+		log.Info().Str("query", string(queryBytes)).Msg("Elastic Query")
+	}
 	res, err := s.EsClient.Search().Index(s.StatusIndex).Request(query).Perform(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search elastic search: %w", err)
@@ -91,6 +98,7 @@ func (s *Service) GetRecordsSince(ctx context.Context, batchSize int, startTime,
 		docs = append(docs, data)
 		return true
 	})
+	log.Info().Str("response", string(body)).Msg("Elastic Response")
 	return docs, nil
 }
 
