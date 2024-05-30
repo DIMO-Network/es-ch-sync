@@ -106,6 +106,7 @@ func (s *Service) SubjectFromTokenID(ctx context.Context, tokenID uint32) (strin
 
 // Prime caches the tokenID and subject for a userDevice.
 func (s *Service) PrimeTokenIDCache(ctx context.Context, tokenID uint32, id string) {
-	s.memoryCache.Set(fmt.Sprintf(deviceTokenCacheKey, id), &tokenID, -1)
+	uintID := uint64(tokenID)
+	s.memoryCache.Set(fmt.Sprintf(deviceTokenCacheKey, id), &uintID, -1)
 	s.memoryCache.Set(fmt.Sprintf(devciceSubCacheKey, tokenID), id, -1)
 }
