@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: {{ include "es-ch-sync.fullname" . }}
+  name: {{ include "es-ch-sync.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "es-ch-sync.labels" . | nindent 4 }}
