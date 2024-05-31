@@ -88,6 +88,7 @@ func settingsToOpttions(settings config.Settings) (sync.Options, error) {
 		BatchSize: batchSize,
 		TokenIDs:  tokenIDs,
 		Signals:   signals,
+		Parallel:  settings.Parallel,
 	}, nil
 }
 

@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+const defaultParallel = 25
+
 type Options struct {
 	// StartTime is the time is the earliest time to start syncing data.
 	StartTime time.Time
@@ -19,4 +21,7 @@ type Options struct {
 
 	// Signals is the list of signals to sync. If empty, all signals are synced.
 	Signals []string
+
+	// Parallel is the number of parallel syncs to run. (default: 25)
+	Parallel int
 }

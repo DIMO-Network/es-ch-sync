@@ -92,7 +92,7 @@ func TestSync(t *testing.T) {
 	require.Equal(t, expectedSigs, len(sigs), "expected number of signals")
 }
 
-func TestSyncWithTokneIDFromCH(t *testing.T) {
+func TestSyncWithTokenIDFromCH(t *testing.T) {
 	sigsInRecord := 18       // each status has 18 signals
 	recordsPerTimestamp := 7 // each timestamp has 7 records with different subjects
 	recordsLoaded := recordsPerTimestamp * batchSize
@@ -187,6 +187,44 @@ func setupService(ctx context.Context, t *testing.T) (*sync.Synchronizer, clickh
 	loadStaticVehicleData(t, es8Client)
 
 	return service, chConn, cleanup
+}
+
+func TestSyncWithParrallel(t *testing.T) {
+	sigsInRecord := 18       // each status has 18 signals
+	recordsPerTimestamp := 7 // each timestamp has 7 records with different subjects
+	recordsLoaded := recordsPerTimestamp * batchSize
+	totalSignals := (recordsLoaded * sigsInRecord)
+	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
+
+	ctx := context.Background()
+	syncer, chConn, cleanup := setupService(ctx, t)
+	t.Cleanup(cleanup)
+
+	// startTime is set to the get half of the inserted records
+	startTime := testFirstTime.Add(time.Millisecond * time.Duration(batchSize) / 2)
+	opts := sync.Options{
+		StartTime: startTime,
+		BatchSize: batchSize,
+		Parallel:  2,
+	}
+	for i := 0; i < recordsPerTimestamp; i++ {
+		// insert tokenID into clickhouse
+		err := chConn.Exec(context.Background(), fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES (?, ?)", vss.TableName, vss.TokenIDCol, vss.TimestampCol), i+1, time.Now())
+		require.NoError(t, err)
+	}
+	err := syncer.Start(context.TODO(), opts)
+	require.NoError(t, err)
+	sigs := []vss.Signal{}
+	rows, err := chConn.Query(context.Background(), fmt.Sprintf("SELECT * FROM %s WHERE %s != ''", vss.TableName, vss.NameCol))
+	require.NoError(t, err)
+	for rows.Next() {
+		sig := vss.Signal{}
+		err = rows.ScanStruct(&sig)
+		require.NoError(t, err)
+		sigs = append(sigs, sig)
+	}
+
+	require.Equal(t, expectedSigs, len(sigs), "expected number of signals")
 }
 
 // loadStaticVehicleData marshals staticVehicleData into a slice of byte slices.

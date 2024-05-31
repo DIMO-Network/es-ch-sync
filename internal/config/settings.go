@@ -7,6 +7,7 @@ type Settings struct {
 	BatchSize                      int    `yaml:"BATCH_SIZE"`
 	TokenIDs                       string `yaml:"TOKEN_IDS"`
 	Signals                        string `yaml:"SIGNALS"`
+	Parallel                       int    `yaml:"PARALLEL"`
 	MonPort                        int    `yaml:"MON_PORT"`
 	ClickHouseHost                 string `yaml:"CLICKHOUSE_HOST"`
 	ClickHouseTCPPort              int    `yaml:"CLICKHOUSE_TCP_PORT"`
