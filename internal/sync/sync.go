@@ -17,6 +17,7 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/model-garage/pkg/vss/convert"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/tidwall/gjson"
 	"golang.org/x/sync/errgroup"
 )
@@ -69,7 +70,7 @@ func (s *Synchronizer) Start(ctx context.Context, opts Options) error {
 	if opts.Parallel == 0 {
 		opts.Parallel = defaultParallel
 	}
-	s.log.Info().Time("StartTime", opts.StartTime).Time("StopTime", opts.StopTime).Interface("TokenIDs", tokenIDs).Interface("Signals", opts.Signals).Msg("Starting sync...")
+	s.log.Info().Time("StartTime", opts.StartTime).Time("StopTime", opts.StopTime).Interface("TokenIDs", tokenIDs).Interface("Signals", opts.Signals).Int("Parallel", opts.Parallel).Msg("Starting sync for all tokenIDs")
 
 	group, _ := errgroup.WithContext(ctx)
 	group.SetLimit(opts.Parallel)
@@ -89,35 +90,38 @@ func (s *Synchronizer) Start(ctx context.Context, opts Options) error {
 }
 
 func (s *Synchronizer) sync(ctx context.Context, tokenID uint32, opts *Options, requiredFields []string) {
-	s.log.Info().Msg(fmt.Sprintf("Syncing tokenID: %d", tokenID))
+	logger := s.log.With().Time("startTime", opts.StartTime).Int("tokenID", int(tokenID)).Logger()
+	logger.Info().Msg("Starting new token sync")
 	// adjust stop time if there are already signals synced in clickhouse.
 	stopTime, err := s.getStopTime(ctx, tokenID, opts)
 	if err != nil {
-		s.log.Error().Err(err).Msg("failed to get next timestamp")
+		logger.Error().Err(err).Msg("failed to get next timestamp")
 		return
 	}
 	subject, err := s.idGetter.SubjectFromTokenID(ctx, tokenID)
 	if err != nil {
-		s.log.Error().Err(err).Msg("failed to get subject from tokenID")
+		logger.Error().Err(err).Msg("failed to get subject from tokenID")
 		return
 	}
+	logger = logger.With().Str("subject", subject).Logger()
 	s.idGetter.PrimeTokenIDCache(ctx, tokenID, subject)
 	first := true
 	for {
-		stopTime, err = s.processRecords(ctx, opts.BatchSize, opts.StartTime, stopTime, subject, requiredFields)
+		logger = logger.With().Time("stopTime", stopTime).Logger()
+		stopTime, err = s.processRecords(logger.WithContext(ctx), opts.BatchSize, opts.StartTime, stopTime, subject, requiredFields)
 		if err != nil {
 			if errors.Is(err, errNoRows) {
 				if first {
-					s.log.Info().Msg(fmt.Sprintf("No records to sync for tokenID: %d", tokenID))
+					logger.Info().Msg("No records to sync")
 				}
 				break
 			}
-			s.log.Error().Err(err).Msg(fmt.Sprintf("Failed to process Records for tokenID: %d", tokenID))
+			logger.Error().Err(err).Msg("Failed to process Records")
 			return
 		}
 		first = false
 	}
-	s.log.Info().Msg(fmt.Sprintf("Finished syncing tokenID: %d", tokenID))
+	logger.Info().Msg("Finished token sync")
 }
 
 // getStopTime returns the stop time for the given tokenID based on the latest signal if any.
@@ -137,20 +141,12 @@ func (s *Synchronizer) getStopTime(ctx context.Context, tokenID uint32, opts *Op
 // It converts the records to Clickhouse signals and inserts them into Clickhouse.
 // The function returns the oldest timestamp and subject from the processed records, and an error if any.
 func (s *Synchronizer) processRecords(ctx context.Context, batchSize int, startTime time.Time, stopTime time.Time, subject string, requiredFields []string) (time.Time, error) {
-
-	esRecords, err := s.esService.GetRecordsSince(ctx, batchSize, startTime, stopTime, subject, requiredFields)
+	logger := log.Ctx(ctx)
+	esRecords, err := s.getEsRecords(ctx, s.esService, batchSize, startTime, stopTime, subject, requiredFields)
 	if err != nil {
-		return time.Time{}, fmt.Errorf("failed to get records elatic records: %w", err)
-	}
-	if len(esRecords) == 0 {
-		// no more records to sync
-		return time.Time{}, errNoRows
+		return time.Time{}, err
 	}
 	signals := s.convertToClickhouseSignals(ctx, esRecords)
-	var tokenID uint32
-	if len(signals) != 0 {
-		tokenID = signals[0].TokenID
-	}
 	err = s.chService.InsertIntoClickhouse(ctx, signals)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("failed to insert into clickhouse: %w", err)
@@ -158,9 +154,33 @@ func (s *Synchronizer) processRecords(ctx context.Context, batchSize int, startT
 	lastRecord := esRecords[len(esRecords)-1]
 	lastTimestamp, _ := convert.TimestampFromV1Data(lastRecord)
 
-	s.log.Info().Int("TokenID", int(tokenID)).Str("subject", subject).Time("lastTimestamp", lastTimestamp).Int("numSignals", len(signals)).Int("numRecords", len(esRecords)).Msg("Batch processed successfully")
+	logger.Debug().Time("lastTimestamp", lastTimestamp).Int("numSignals", len(signals)).Int("numRecords", len(esRecords)).Msg("Batch processed successfully")
 
 	return lastTimestamp, nil
+}
+
+// getEsRecords retrieves records from Elasticsearch. If the batch size is too large, it reduces the batch size and retries.
+func (s *Synchronizer) getEsRecords(ctx context.Context, esService *elastic.Service, batchSize int, startTime, stopTime time.Time, subject string, requiredFields []string) ([][]byte, error) {
+	logger := log.Ctx(ctx)
+	var err error
+	var esRecords [][]byte
+	currentBatchSize := batchSize
+	for {
+		esRecords, err = s.esService.GetRecordsSince(ctx, currentBatchSize, startTime, stopTime, subject, requiredFields)
+		if err != nil {
+			if currentBatchSize > 1 && strings.Contains(err.Error(), "Data too large") {
+				currentBatchSize /= 2
+				logger.Warn().Int("batchSize", currentBatchSize).Msg("Data too large, reducing batch size")
+				continue
+			}
+			return nil, fmt.Errorf("failed to get records elatic records: %w", err)
+		}
+		if len(esRecords) == 0 {
+			// no more records to sync
+			return nil, errNoRows
+		}
+		return esRecords, nil
+	}
 }
 
 // convertToClickhouseValues converts the elastic search records to clickhouse signals.
