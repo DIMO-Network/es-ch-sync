@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -52,6 +53,18 @@ func run() error {
 	if err := syncer.Start(context.Background(), opts); err != nil {
 		return fmt.Errorf("failed to start synchronizer: %w", err)
 	}
+
+	// stop linkerd
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "http://localhost:4191/shutdown", nil)
+	if err != nil {
+		return fmt.Errorf("failed to create shutdown request: %w", err)
+	}
+	if _, err := http.DefaultClient.Do(req); err != nil {
+		return fmt.Errorf("failed to send shutdown request: %w", err)
+	}
+
 	return nil
 }
 

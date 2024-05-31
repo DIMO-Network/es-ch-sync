@@ -11,6 +11,7 @@ env:
   MON_PORT: 8888
   DEVICE_DATA_INDEX_NAME: device-status-prod*
   DEVICES_API_GRPC_ADDR: devices-api-prod:8086
+  PARALLEL: 100
 ingress:
   enabled: true
   className: nginx
