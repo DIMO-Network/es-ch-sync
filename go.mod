@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.23.1
 	github.com/DIMO-Network/devices-api v1.25.18
-	github.com/DIMO-Network/model-garage v0.2.1-0.20240529140915-131d3a091be2
+	github.com/DIMO-Network/model-garage v0.2.1
 	github.com/DIMO-Network/shared v0.10.12
 	github.com/elastic/go-elasticsearch/v8 v8.13.1
 	github.com/gofiber/fiber/v2 v2.52.1
@@ -17,6 +17,7 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/elasticsearch v0.30.0
 	github.com/tidwall/gjson v1.17.1
 	github.com/volatiletech/sqlboiler/v4 v4.16.2
+	golang.org/x/sync v0.7.0
 	google.golang.org/grpc v1.63.2
 )
 
@@ -106,7 +107,6 @@ require (
 	golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
-	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
