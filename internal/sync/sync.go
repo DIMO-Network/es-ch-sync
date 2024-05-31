@@ -222,7 +222,7 @@ func (s *Synchronizer) getTokenIDs(ctx context.Context, tokenIDStrs []string) ([
 	}
 	tokenIDs := []uint32{}
 	for _, tokenIDStr := range tokenIDStrs {
-		tokenID, err := strconv.Atoi(tokenIDStr)
+		tokenID, err := strconv.Atoi(strings.TrimSpace(tokenIDStr))
 		if err != nil {
 			s.log.Error().Err(err).Msg("failed to convert tokenID to int")
 			continue
@@ -243,6 +243,7 @@ func getRequiredEsFields(opts Options) ([]string, error) {
 	}
 	var elasticFields []string
 	for _, signal := range opts.Signals {
+		signal = strings.TrimSpace(signal)
 		defInfo, ok := signalDefs.FromName[signal]
 		if !ok {
 			continue

@@ -31,7 +31,7 @@ import (
 
 const deviceIndex = "device-status"
 
-var batchSize = 10
+var insertBatchSize = 100000
 var (
 	testFirstTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
@@ -63,7 +63,7 @@ func (t tokenGetter) PrimeTokenIDCache(context.Context, uint32, string) {}
 func TestSync(t *testing.T) {
 	sigsInRecord := 18       // each status has 18 signals
 	recordsPerTimestamp := 8 // each timestamp has 8 records with different subjects
-	recordsLoaded := recordsPerTimestamp * batchSize
+	recordsLoaded := recordsPerTimestamp * insertBatchSize
 	totalSignals := (recordsLoaded * sigsInRecord)
 	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
 
@@ -72,11 +72,11 @@ func TestSync(t *testing.T) {
 	t.Cleanup(cleanup)
 
 	// startTime is set to the get half of the inserted records
-	startTime := testFirstTime.Add(time.Millisecond * time.Duration(batchSize) / 2)
+	startTime := testFirstTime.Add(time.Millisecond * time.Duration(insertBatchSize) / 2)
 	opts := sync.Options{
 		StartTime: startTime,
-		BatchSize: batchSize,
-		TokenIDs:  []string{"1", "2", "3", "4", "5", "6", "7", "8"},
+		BatchSize: insertBatchSize,
+		TokenIDs:  []string{"1", "2 ", "3", "4	", " 5 ", "	6", "7", "8"},
 	}
 	err := syncer.Start(context.TODO(), opts)
 	require.NoError(t, err)
@@ -95,7 +95,7 @@ func TestSync(t *testing.T) {
 func TestSyncWithTokenIDFromCH(t *testing.T) {
 	sigsInRecord := 18       // each status has 18 signals
 	recordsPerTimestamp := 7 // each timestamp has 7 records with different subjects
-	recordsLoaded := recordsPerTimestamp * batchSize
+	recordsLoaded := recordsPerTimestamp * insertBatchSize
 	totalSignals := (recordsLoaded * sigsInRecord)
 	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
 
@@ -104,10 +104,10 @@ func TestSyncWithTokenIDFromCH(t *testing.T) {
 	t.Cleanup(cleanup)
 
 	// startTime is set to the get half of the inserted records
-	startTime := testFirstTime.Add(time.Millisecond * time.Duration(batchSize) / 2)
+	startTime := testFirstTime.Add(time.Millisecond * time.Duration(insertBatchSize) / 2)
 	opts := sync.Options{
 		StartTime: startTime,
-		BatchSize: batchSize,
+		BatchSize: insertBatchSize,
 	}
 	for i := 0; i < recordsPerTimestamp; i++ {
 		// insert tokenID into clickhouse
@@ -132,7 +132,7 @@ func TestSyncWithTokenIDFromCH(t *testing.T) {
 func TestSyncWithFieldFilter(t *testing.T) {
 	sigsInRecord := 2        // each status has 2 signals
 	recordsPerTimestamp := 8 // each timestamp has 8 records with different subjects
-	recordsLoaded := recordsPerTimestamp * batchSize
+	recordsLoaded := recordsPerTimestamp * insertBatchSize
 	totalSignals := (recordsLoaded * sigsInRecord)
 	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
 
@@ -141,12 +141,78 @@ func TestSyncWithFieldFilter(t *testing.T) {
 	t.Cleanup(cleanup)
 
 	// startTime is set to the get half of the inserted records
-	startTime := testFirstTime.Add(time.Millisecond * time.Duration(batchSize) / 2)
+	startTime := testFirstTime.Add(time.Millisecond * time.Duration(insertBatchSize) / 2)
 	opts := sync.Options{
 		StartTime: startTime,
-		BatchSize: batchSize,
+		BatchSize: insertBatchSize,
 		TokenIDs:  []string{"1", "2", "3", "4", "5", "6", "7", "8"},
-		Signals:   []string{"Vehicle.Speed", "Vehicle.VehicleIdentification.Brand"},
+		Signals:   []string{"Vehicle.Speed ", "Vehicle.VehicleIdentification.Brand"},
+	}
+	err := syncer.Start(context.TODO(), opts)
+	require.NoError(t, err)
+	sigs := []vss.Signal{}
+	rows, err := chConn.Query(context.Background(), fmt.Sprintf("SELECT * FROM %s WHERE %s != ''", vss.TableName, vss.NameCol))
+	require.NoError(t, err)
+	for rows.Next() {
+		sig := vss.Signal{}
+		err = rows.ScanStruct(&sig)
+		require.NoError(t, err)
+		sigs = append(sigs, sig)
+	}
+
+	require.Equal(t, expectedSigs, len(sigs), "expected number of signals")
+}
+func TestSyncWithParrallel(t *testing.T) {
+	sigsInRecord := 18       // each status has 18 signals
+	recordsPerTimestamp := 7 // each timestamp has 7 records with different subjects
+	recordsLoaded := recordsPerTimestamp * insertBatchSize
+	totalSignals := (recordsLoaded * sigsInRecord)
+	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
+
+	ctx := context.Background()
+	syncer, chConn, cleanup := setupService(ctx, t)
+	t.Cleanup(cleanup)
+
+	// startTime is set to the get half of the inserted records
+	startTime := testFirstTime.Add(time.Millisecond * time.Duration(insertBatchSize) / 2)
+	opts := sync.Options{
+		StartTime: startTime,
+		BatchSize: insertBatchSize,
+		Parallel:  2,
+		TokenIDs:  []string{"1", "2", "3", "4", "5", "6", "7", "8"},
+	}
+	err := syncer.Start(context.TODO(), opts)
+	require.NoError(t, err)
+	sigs := []vss.Signal{}
+	rows, err := chConn.Query(context.Background(), fmt.Sprintf("SELECT * FROM %s WHERE %s != ''", vss.TableName, vss.NameCol))
+	require.NoError(t, err)
+	for rows.Next() {
+		sig := vss.Signal{}
+		err = rows.ScanStruct(&sig)
+		require.NoError(t, err)
+		sigs = append(sigs, sig)
+	}
+
+	require.Equal(t, expectedSigs, len(sigs), "expected number of signals")
+}
+
+func TestSyncWithDataTooLarge(t *testing.T) {
+	sigsInRecord := 18       // each status has 18 signals
+	recordsPerTimestamp := 8 // each timestamp has 7 records with different subjects
+	recordsLoaded := recordsPerTimestamp * insertBatchSize
+	totalSignals := (recordsLoaded * sigsInRecord)
+	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
+
+	ctx := context.Background()
+	syncer, chConn, cleanup := setupService(ctx, t)
+	t.Cleanup(cleanup)
+
+	// startTime is set to the get half of the inserted records
+	startTime := testFirstTime.Add(time.Millisecond * time.Duration(insertBatchSize) / 2)
+	opts := sync.Options{
+		StartTime: startTime,
+		BatchSize: 10000,
+		TokenIDs:  []string{"1", "2", "3", "4", "5", "6", "7", "8"},
 	}
 	err := syncer.Start(context.TODO(), opts)
 	require.NoError(t, err)
@@ -189,44 +255,6 @@ func setupService(ctx context.Context, t *testing.T) (*sync.Synchronizer, clickh
 	return service, chConn, cleanup
 }
 
-func TestSyncWithParrallel(t *testing.T) {
-	sigsInRecord := 18       // each status has 18 signals
-	recordsPerTimestamp := 7 // each timestamp has 7 records with different subjects
-	recordsLoaded := recordsPerTimestamp * batchSize
-	totalSignals := (recordsLoaded * sigsInRecord)
-	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
-
-	ctx := context.Background()
-	syncer, chConn, cleanup := setupService(ctx, t)
-	t.Cleanup(cleanup)
-
-	// startTime is set to the get half of the inserted records
-	startTime := testFirstTime.Add(time.Millisecond * time.Duration(batchSize) / 2)
-	opts := sync.Options{
-		StartTime: startTime,
-		BatchSize: batchSize,
-		Parallel:  2,
-	}
-	for i := 0; i < recordsPerTimestamp; i++ {
-		// insert tokenID into clickhouse
-		err := chConn.Exec(context.Background(), fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES (?, ?)", vss.TableName, vss.TokenIDCol, vss.TimestampCol), i+1, time.Now())
-		require.NoError(t, err)
-	}
-	err := syncer.Start(context.TODO(), opts)
-	require.NoError(t, err)
-	sigs := []vss.Signal{}
-	rows, err := chConn.Query(context.Background(), fmt.Sprintf("SELECT * FROM %s WHERE %s != ''", vss.TableName, vss.NameCol))
-	require.NoError(t, err)
-	for rows.Next() {
-		sig := vss.Signal{}
-		err = rows.ScanStruct(&sig)
-		require.NoError(t, err)
-		sigs = append(sigs, sig)
-	}
-
-	require.Equal(t, expectedSigs, len(sigs), "expected number of signals")
-}
-
 // loadStaticVehicleData marshals staticVehicleData into a slice of byte slices.
 // and then inserts each byte slice into the elastic index.
 func loadStaticVehicleData(t *testing.T, client *elasticsearch.TypedClient) {
@@ -242,7 +270,7 @@ func loadStaticVehicleData(t *testing.T, client *elasticsearch.TypedClient) {
 	// The time field is incremented by 1 millisecond for each object.
 	total := 0
 	bulk := client.Bulk().Index(deviceIndex).Refresh(refresh.True)
-	for i := range batchSize {
+	for i := range insertBatchSize {
 		for j, obj := range data {
 			obj["time"] = testFirstTime.Add(time.Millisecond * time.Duration(i+1))
 			obj["subject"] = strconv.Itoa(j + 1)
