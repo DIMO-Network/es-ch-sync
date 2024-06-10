@@ -89,7 +89,7 @@ func (s *Service) GetRecordsSince(ctx context.Context, batchSize int, startTime,
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("status code %d from Elastic with body: %s", res.StatusCode, string(body))
+		return nil, fmt.Errorf("failure status code %d from Elastic with body: %s", res.StatusCode, string(body))
 	}
 
 	// check if response has an error
