@@ -142,7 +142,7 @@ func (s *Synchronizer) getStopTime(ctx context.Context, tokenID uint32, opts *Op
 // The function returns the oldest timestamp and subject from the processed records, and an error if any.
 func (s *Synchronizer) processRecords(ctx context.Context, batchSize int, startTime time.Time, stopTime time.Time, subject string, requiredFields []string) (time.Time, error) {
 	logger := log.Ctx(ctx)
-	esRecords, err := s.getEsRecords(ctx, s.esService, batchSize, startTime, stopTime, subject, requiredFields)
+	esRecords, err := s.getEsRecords(ctx, batchSize, startTime, stopTime, subject, requiredFields)
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -160,7 +160,7 @@ func (s *Synchronizer) processRecords(ctx context.Context, batchSize int, startT
 }
 
 // getEsRecords retrieves records from Elasticsearch. If the batch size is too large, it reduces the batch size and retries.
-func (s *Synchronizer) getEsRecords(ctx context.Context, esService *elastic.Service, batchSize int, startTime, stopTime time.Time, subject string, requiredFields []string) ([][]byte, error) {
+func (s *Synchronizer) getEsRecords(ctx context.Context, batchSize int, startTime, stopTime time.Time, subject string, requiredFields []string) ([][]byte, error) {
 	logger := log.Ctx(ctx)
 	var err error
 	var esRecords [][]byte

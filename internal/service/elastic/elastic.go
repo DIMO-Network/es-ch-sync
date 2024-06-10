@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -81,10 +82,16 @@ func (s *Service) GetRecordsSince(ctx context.Context, batchSize int, startTime,
 		return nil, fmt.Errorf("failed to search elastic search: %w", err)
 	}
 	defer res.Body.Close()
+
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code %d from Elastic with body: %s", res.StatusCode, string(body))
+	}
+
 	// check if response has an error
 	if err := gjson.GetBytes(body, "error").String(); err != "" {
 		return nil, fmt.Errorf("failed to get records from elasticsearch: %s", err)
