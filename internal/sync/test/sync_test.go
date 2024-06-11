@@ -31,7 +31,7 @@ import (
 
 const deviceIndex = "device-status"
 
-var insertBatchSize = 100000
+var insertBatchSize = 1000
 var (
 	testFirstTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
@@ -164,7 +164,7 @@ func TestSyncWithFieldFilter(t *testing.T) {
 }
 func TestSyncWithParrallel(t *testing.T) {
 	sigsInRecord := 18       // each status has 18 signals
-	recordsPerTimestamp := 7 // each timestamp has 7 records with different subjects
+	recordsPerTimestamp := 8 // each timestamp has 8 records with different subjects
 	recordsLoaded := recordsPerTimestamp * insertBatchSize
 	totalSignals := (recordsLoaded * sigsInRecord)
 	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
