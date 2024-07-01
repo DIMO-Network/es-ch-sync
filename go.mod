@@ -8,7 +8,7 @@ require (
 	github.com/DIMO-Network/model-garage v0.2.1
 	github.com/DIMO-Network/shared v0.10.12
 	github.com/elastic/go-elasticsearch/v8 v8.13.1
-	github.com/gofiber/fiber/v2 v2.52.1
+	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v1.19.0
 	github.com/rs/zerolog v1.32.0
