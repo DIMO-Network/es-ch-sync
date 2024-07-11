@@ -45,6 +45,7 @@ func New(settings config.Settings) (*Service, error) {
 		TLS: &tls.Config{
 			MinVersion: tls.VersionTLS12,
 		},
+		MaxIdleConns: settings.Parallel,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to open clickhouse connection: %w", err)

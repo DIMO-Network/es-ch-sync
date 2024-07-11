@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math"
 	"strconv"
 	"time"
 
@@ -24,9 +25,15 @@ type Service struct {
 
 func New(settings config.Settings) (*Service, error) {
 	esConfig := elasticsearch.Config{
-		Addresses: []string{settings.ElasticSearchAnalyticsHost},
-		Username:  settings.ElasticSearchAnalyticsUsername,
-		Password:  settings.ElasticSearchAnalyticsPassword,
+		Addresses:     []string{settings.ElasticSearchAnalyticsHost},
+		Username:      settings.ElasticSearchAnalyticsUsername,
+		Password:      settings.ElasticSearchAnalyticsPassword,
+		RetryOnStatus: []int{429, 502, 503, 504}, // Add 429 to the default list.
+		MaxRetries:    5,
+		RetryBackoff: func(attempt int) time.Duration {
+			// Back off 5, 10, 20, 40, 80 seconds.
+			return 5 * time.Duration(math.Pow(2, float64(attempt-1))) * time.Second
+		},
 	}
 	es8Client, err := elasticsearch.NewTypedClient(esConfig)
 	if err != nil {

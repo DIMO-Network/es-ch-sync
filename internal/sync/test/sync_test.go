@@ -13,10 +13,11 @@ import (
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
+	chconfig "github.com/DIMO-Network/clickhouse-infra/pkg/connect/config"
+	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
 	clickhouseservice "github.com/DIMO-Network/es-ch-sync/internal/service/clickhouse"
 	"github.com/DIMO-Network/es-ch-sync/internal/service/elastic"
 	"github.com/DIMO-Network/es-ch-sync/internal/sync"
-	"github.com/DIMO-Network/model-garage/pkg/clickhouseinfra"
 	"github.com/DIMO-Network/model-garage/pkg/migrations"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/elastic/go-elasticsearch/v8"
@@ -31,7 +32,7 @@ import (
 
 const deviceIndex = "device-status"
 
-var insertBatchSize = 100000
+var insertBatchSize = 100
 var (
 	testFirstTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
@@ -60,8 +61,9 @@ func (t tokenGetter) SubjectFromTokenID(_ context.Context, tokenID uint32) (stri
 	return strconv.Itoa(int(tokenID)), nil
 }
 func (t tokenGetter) PrimeTokenIDCache(context.Context, uint32, string) {}
+
 func TestSync(t *testing.T) {
-	sigsInRecord := 18       // each status has 18 signals
+	sigsInRecord := 15       // each status has 15 signals
 	recordsPerTimestamp := 8 // each timestamp has 8 records with different subjects
 	recordsLoaded := recordsPerTimestamp * insertBatchSize
 	totalSignals := (recordsLoaded * sigsInRecord)
@@ -93,8 +95,8 @@ func TestSync(t *testing.T) {
 }
 
 func TestSyncWithTokenIDFromCH(t *testing.T) {
-	sigsInRecord := 18       // each status has 18 signals
-	recordsPerTimestamp := 7 // each timestamp has 7 records with different subjects
+	sigsInRecord := 15       // each status has 15 signals
+	recordsPerTimestamp := 8 // each timestamp has 8 records with different subjects
 	recordsLoaded := recordsPerTimestamp * insertBatchSize
 	totalSignals := (recordsLoaded * sigsInRecord)
 	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
@@ -146,7 +148,7 @@ func TestSyncWithFieldFilter(t *testing.T) {
 		StartTime: startTime,
 		BatchSize: insertBatchSize,
 		TokenIDs:  []string{"1", "2", "3", "4", "5", "6", "7", "8"},
-		Signals:   []string{"Vehicle.Speed ", "Vehicle.VehicleIdentification.Brand"},
+		Signals:   []string{"Vehicle.Speed", "Vehicle.Powertrain.FuelSystem.RelativeLevel"},
 	}
 	err := syncer.Start(context.TODO(), opts)
 	require.NoError(t, err)
@@ -162,9 +164,10 @@ func TestSyncWithFieldFilter(t *testing.T) {
 
 	require.Equal(t, expectedSigs, len(sigs), "expected number of signals")
 }
+
 func TestSyncWithParrallel(t *testing.T) {
-	sigsInRecord := 18       // each status has 18 signals
-	recordsPerTimestamp := 7 // each timestamp has 7 records with different subjects
+	sigsInRecord := 15       // each status has 15 signals
+	recordsPerTimestamp := 8 // each timestamp has 7 records with different subjects
 	recordsLoaded := recordsPerTimestamp * insertBatchSize
 	totalSignals := (recordsLoaded * sigsInRecord)
 	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
@@ -197,8 +200,8 @@ func TestSyncWithParrallel(t *testing.T) {
 }
 
 func TestSyncWithDataTooLarge(t *testing.T) {
-	sigsInRecord := 18       // each status has 18 signals
-	recordsPerTimestamp := 8 // each timestamp has 7 records with different subjects
+	sigsInRecord := 15       // each status has 15 signals
+	recordsPerTimestamp := 8 // each timestamp has 8 records with different subjects
 	recordsLoaded := recordsPerTimestamp * insertBatchSize
 	totalSignals := (recordsLoaded * sigsInRecord)
 	expectedSigs := (totalSignals / 2) + (sigsInRecord * recordsPerTimestamp) // we expect to see half of the signals + 1 for inclusive time range
@@ -333,7 +336,7 @@ func Create(ctx context.Context) (clickhouse.Conn, *elasticsearch.TypedClient, f
 		return nil, nil, cleanup, fmt.Errorf("failed to create elastic client: %w", err)
 	}
 
-	container, err := clickhouseinfra.CreateClickHouseContainer(ctx, "", "")
+	container, err := container.CreateClickHouseContainer(ctx, chconfig.Settings{})
 	if err != nil {
 		return nil, nil, cleanup, fmt.Errorf("could not start ClickHouse container: %v", err)
 	}
@@ -344,7 +347,7 @@ func Create(ctx context.Context) (clickhouse.Conn, *elasticsearch.TypedClient, f
 		}
 	}
 
-	db, err := container.GetClickhouseAsDB(ctx)
+	db, err := container.GetClickhouseAsDB()
 	if err != nil {
 		return nil, nil, cleanup, fmt.Errorf("could not get ClickHouse database: %v", err)
 	}
