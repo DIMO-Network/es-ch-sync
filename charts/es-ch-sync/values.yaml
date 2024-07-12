@@ -31,7 +31,7 @@ env:
   START_TIME: '2024-01-01T00:00:00Z'
   BATCH_SIZE: 1000
   PARALLEL: 25
-  DEVICE_DATA_INDEX_NAME: device-status-dev*
+  DEVICE_DATA_INDEX_NAME: device-status-dev-
   DEVICES_API_GRPC_ADDR: devices-api-dev:8086
 service:
   type: ClusterIP
