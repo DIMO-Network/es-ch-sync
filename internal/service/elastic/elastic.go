@@ -59,7 +59,7 @@ func (s *Service) GetRecordsSince(ctx context.Context, batchSize int, startTime,
 				Bool: &types.BoolQuery{
 					Filter: []types.Query{
 						{Match: map[string]types.MatchQuery{"subject": {Query: subject}}},
-						{Range: map[string]types.RangeQuery{"time": types.DateRangeQuery{Gte: &startArg, Lt: &endArg}}},
+						{Range: map[string]types.RangeQuery{"time": types.DateRangeQuery{Gte: &startArg, Lte: &endArg}}},
 					},
 				},
 			},

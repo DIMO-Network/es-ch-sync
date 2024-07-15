@@ -109,13 +109,15 @@ func (s *Synchronizer) sync(ctx context.Context, tokenID uint32, opts *Options, 
 		logger.Error().Err(err).Msg("failed to get subject from tokenID")
 		return
 	}
-	logger = logger.With().Str("subject", subject).Logger()
+	baseLogger := logger.With().Str("subject", subject).Logger()
 	s.idGetter.PrimeTokenIDCache(ctx, tokenID, subject)
 	for startTime.Before(stopTime) {
-		logger = logger.With().Time("date", startTime).Logger()
+		logger = baseLogger.With().Time("date", startTime).Logger()
 		err = s.processRecords(logger.WithContext(ctx), opts.BatchSize, startTime, stopTime, subject, requiredFields)
 		if err != nil {
-			logger.Error().Err(err).Msg("Failed to process Records")
+			if !errors.Is(err, errNoRows) {
+				logger.Error().Err(err).Msg("Failed to process Records")
+			}
 		}
 		startTime = startTime.Add(time.Hour * 24).Truncate(time.Hour * 24)
 	}
@@ -136,8 +138,7 @@ func (s *Synchronizer) getStopTime(ctx context.Context, tokenID uint32, opts *Op
 
 // getStopTime returns the stop time for the given tokenID based on the latest signal if any.
 func (s *Synchronizer) getStartTime(ctx context.Context, tokenID uint32, opts *Options) (time.Time, error) {
-	// TODO
-	return time.Time{}, nil
+	return opts.StartTime, nil
 }
 
 // processRecords processes the records retrieved from Elasticsearch.
@@ -154,6 +155,7 @@ func (s *Synchronizer) processRecords(ctx context.Context, batchSize int, startT
 	if err != nil {
 		return fmt.Errorf("failed to insert into clickhouse: %w", err)
 	}
+	log.Ctx(ctx).Debug().Int("numSignals", len(signals)).Int("numRecords", len(esRecords)).Msg("Batch processed successfully")
 	return nil
 }
 
