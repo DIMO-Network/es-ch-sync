@@ -12,7 +12,6 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/some"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
-	"github.com/tidwall/gjson"
 )
 
 // Service is responsible for interacting with an Elasticsearch instance.
@@ -102,17 +101,4 @@ func (s *Service) GetRecordsSince(ctx context.Context, batchSize int, startTime,
 	}
 
 	return docs, nil
-}
-
-// resultToBytes converts the result to a byte slice.
-// this logic is the recommended way to extract the raw bytes from a gjson result.
-// more info: https://github.com/tidwall/gjson/blob/6ee9f877d683381343bc998c137339c7ae908b86/README.md#working-with-bytes
-func resultToBytes(body []byte, result gjson.Result) []byte {
-	var raw []byte
-	if result.Index > 0 {
-		raw = body[result.Index : result.Index+len(result.Raw)]
-	} else {
-		raw = []byte(result.Raw)
-	}
-	return raw
 }
